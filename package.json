@@ -1,0 +1,26 @@
+{
+  "name": "my-sabivida-mini-app",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "SabiVida mini app built with Solid, Vite and TypeScript.",
+  "scripts": {
+    "dev": "vite",
+    "dev:mock": "node scripts/dev-mock.mjs http://localhost:4320/ vite --port 4320 --strictPort",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "deploy": "npm run build && wrangler deploy"
+  },
+  "dependencies": {
+    "jose": "^6.2.13",
+    "solid-js": "^1.9.17"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.1",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.5",
+    "vite-plugin-solid": "^2.11.14",
+    "wrangler": "^4.152.0"
+  }
+}
