@@ -10,5 +10,5 @@
     "run_worker_first": true,
     "not_found_handling": "single-page-application",
   },
-  "vars": { "SABIVIDA_HOST": "https://sabivida.com", "MINI_APP_ID": "your-app-id" },
+  "vars": { "SABIVIDA_HOST": "https://app.sabivida.com", "MINI_APP_ID": "your-app-id" },
 }

@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       solid(),
       sabividaMiniApp({
-        host: env.SABIVIDA_HOST || 'https://sabivida.com',
+        host: env.SABIVIDA_HOST || 'https://app.sabivida.com',
         appId: env.MINI_APP_ID || 'your-app-id',
         jwks: env.SABIVIDA_JWKS || undefined,
         sdkUrl: env.SDK_URL || undefined,

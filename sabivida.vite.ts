@@ -2,10 +2,11 @@
 // POST /session in `vite dev` and `vite preview`, and sends the framing policy.
 // In production the Worker (worker/index.ts) does the same.
 import type { Connect, Plugin } from 'vite';
-import { frameAncestors, handleSession, type SessionConfig } from './server/session';
+import { frameAncestors, handleSession, sdkHost, type SessionConfig } from './server/session';
 
 export function sabividaMiniApp(config: SessionConfig & { sdkUrl?: string }): Plugin {
   const sdk = config.sdkUrl || new URL('/mini-apps/sdk/v1.js', config.host).href;
+  const parent = sdkHost(config.host);
   const middleware: Connect.NextHandleFunction = async (req, res, next) => {
     res.setHeader('Content-Security-Policy', frameAncestors(config.host));
     if (req.method !== 'POST' || req.url !== '/session') return next();
@@ -22,7 +23,11 @@ export function sabividaMiniApp(config: SessionConfig & { sdkUrl?: string }): Pl
   return {
     name: 'sabivida-mini-app',
     transformIndexHtml: () => [
-      { tag: 'script', attrs: { src: sdk, 'data-sabivida-host': config.host }, injectTo: 'head-prepend' },
+      {
+        tag: 'script',
+        attrs: parent ? { src: sdk, 'data-sabivida-host': parent } : { src: sdk },
+        injectTo: 'head-prepend',
+      },
     ],
     configureServer: (server) => void server.middlewares.use(middleware),
     configurePreviewServer: (server) => void server.middlewares.use(middleware),
