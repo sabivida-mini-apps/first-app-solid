@@ -3,7 +3,7 @@
 import { createLocalJWKSet, createRemoteJWKSet, jwtVerify, type JWTVerifyGetKey } from 'jose';
 
 export type SessionConfig = {
-  // The SabiVida origin that frames you: https://sabivida.com in production.
+  // The SabiVida origin that frames you: https://app.sabivida.com in production.
   host: string;
   // Your app id, the token's audience.
   appId: string;
@@ -12,6 +12,25 @@ export type SessionConfig = {
 };
 
 export type Member = { subject: string; name: string | null };
+
+// SabiVida production moved from https://sabivida.com to
+// https://app.sabivida.com. Either may frame your app, and launch tokens keep
+// the https://sabivida.com issuer, so the two count as one production host.
+// Any other host (staging, the local stand-in) is one origin that also issues
+// the tokens.
+const PRODUCTION_HOSTS = ['https://app.sabivida.com', 'https://sabivida.com'];
+const PRODUCTION_ISSUER = 'https://sabivida.com';
+const isProduction = (host: string) => PRODUCTION_HOSTS.includes(host);
+
+// The origins allowed to frame your app.
+export const parentOrigins = (host: string) => (isProduction(host) ? PRODUCTION_HOSTS : [host]);
+
+// The `iss` every launch token must carry.
+export const issuerFor = (host: string) => (isProduction(host) ? PRODUCTION_ISSUER : host);
+
+// The SDK script's `data-sabivida-host`: none in production, so the SDK talks to
+// whichever production host frames your app; the host itself anywhere else.
+export const sdkHost = (host: string) => (isProduction(host) ? undefined : host);
 
 let keys: { id: string; get: JWTVerifyGetKey } | null = null;
 function keysFor(config: SessionConfig) {
@@ -33,7 +52,7 @@ const used = new Map<string, number>();
 export async function verifyLaunch(token: unknown, config: SessionConfig): Promise<Member> {
   if (typeof token !== 'string') throw new Error('token');
   const { payload } = await jwtVerify(token, keysFor(config), {
-    issuer: config.host,
+    issuer: issuerFor(config.host),
     audience: config.appId,
     typ: 'sabivida-launch+jwt',
     algorithms: ['EdDSA'],
@@ -60,4 +79,4 @@ export async function handleSession(request: Request, config: SessionConfig): Pr
 }
 
 // Only SabiVida may frame your app.
-export const frameAncestors = (host: string) => `frame-ancestors ${host}`;
+export const frameAncestors = (host: string) => `frame-ancestors ${parentOrigins(host).join(' ')}`;

@@ -16,7 +16,7 @@ const { privateKey, publicKey } = await generateKeyPair('EdDSA', { crv: 'Ed25519
 const jwk = await exportJWK(publicKey);
 const kid = await calculateJwkThumbprint(jwk);
 const jwks = JSON.stringify({ keys: [{ ...jwk, kid, alg: 'EdDSA', use: 'sig' }] });
-const sdk = await fetch('https://sabivida.com/mini-apps/sdk/v1.js').then((r) => (r.ok ? r.text() : Promise.reject(new Error(`SDK download failed: ${r.status}`))));
+const sdk = await fetch('https://app.sabivida.com/mini-apps/sdk/v1.js').then((r) => (r.ok ? r.text() : Promise.reject(new Error(`SDK download failed: ${r.status}`))));
 
 const html = (v) => String(v).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 const js = (v) => JSON.stringify(v).replace(/</g, '\\u003c');

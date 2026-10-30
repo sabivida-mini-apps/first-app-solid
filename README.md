@@ -28,7 +28,7 @@ SabiVida only frames your registered HTTPS origin, so you test inside SabiVida o
 
 ## Deploy to Cloudflare Workers
 
-Set `name`, `SABIVIDA_HOST` and `MINI_APP_ID` in `wrangler.jsonc`, then run `npm run deploy`. The Worker serves the built app and answers `POST /session`. Every response carries `Content-Security-Policy: frame-ancestors <SabiVida>`.
+Set `name` and `MINI_APP_ID` in `wrangler.jsonc` (keep `SABIVIDA_HOST` at `https://app.sabivida.com`), then run `npm run deploy`. The Worker serves the built app and answers `POST /session`. Every response carries `Content-Security-Policy: frame-ancestors https://app.sabivida.com https://sabivida.com`: SabiVida may frame your app from either host, and launch tokens keep the `https://sabivida.com` issuer.
 
 ## What's inside
 
